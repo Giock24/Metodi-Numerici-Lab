@@ -226,193 +226,185 @@ def secanti(fname,xm1,x0,tolx,tolf,nmax):
 
 def newton_mod(fname,fpname,m,x0,tolx,tolf,nmax):
     """
- Implementa il metodo di Newton modificato da utilizzato per il calcolo degli zeri di un'equazione non lineare
- nel caso di zeri multipli.
-
- Parametri:
-  fname: La funzione di cui si vuole calcolare lo zero.
-  fpname: La derivata prima della funzione di  cui si vuole calcolare lo zero.
-   m: molteplicità della radice
-  x0: iterato iniziale
-  tolx: La tolleranza di errore tra due iterati successivi
-  tolf: tolleranza sul valore della funzione
-  nmax: numero massimo di iterazione
-
- Restituisce:
-  Lo zero approssimato della funzione, il numero di iterazioni e la lista degli iterati intermedi.
- """ 
+    Implementa il metodo di Newton modificato da utilizzato per il calcolo degli zeri di un'equazione non lineare
+    nel caso di zeri multipli.
+    Parametri:
+    fname: La funzione di cui si vuole calcolare lo zero.
+    fpname: La derivata prima della funzione di  cui si vuole calcolare lo zero.
+    m: molteplicità della radice
+    x0: iterato iniziale
+    tolx: La tolleranza di errore tra due iterati successivi
+    tolf: tolleranza sul valore della funzione
+    nmax: numero massimo di iterazione
+    Restituisce:
+    Lo zero approssimato della funzione, il numero di iterazioni e la lista degli iterati intermedi.
+    """ 
  
-        xk=[]
-        fx0=#to do
-        if #to do :
+    xk=[]
+    fx0=fname(x0)
+    
+    if np.abs(fpname(x0)) <= np.spacing(1) :
+        print(" derivata prima nulla in x0")
+        return None, None,None
+    
+    d=fx0/fpname(x0)
+    x1= x0 - m * d
+    
+    fx1=fname(x1)
+    xk.append(x1)
+    it=1
+        
+    while it <= nmax and np.abs(x1 - x0)/np.abs(x1) > tolx and np.abs(fx1) > tolf :
+        x0=x1
+        fx0=fname(x0)
+        
+        if np.abs(fpname(x0)) <= np.spacing(1): #Se la derivata prima e' pià piccola della precisione di macchina stop
             print(" derivata prima nulla in x0")
             return None, None,None
-
-        d=#to do
-        x1=#to do
         
-        fx1=#to do
+        d=fx0/fpname(x0) 
+        x1= x0 - m * d
+        fx1=fname(x1)
+        it=it+1
+     
         xk.append(x1)
-        it=1
+      
+    if it==nmax:
+        print('raggiunto massimo numero di iterazioni \n')
         
-        while #to do :
-           x0=#to do
-           fx0=#to do
-           if #to do: #Se la derivata prima e' pià piccola della precisione di macchina stop
-                print(" derivata prima nulla in x0")
-                return None, None,None
-           d=#to do
-            
-           x1=#to do 
-           fx1=fname(x1)
-           it=it+1
-         
-           xk.append(x1)
-          
-        if it==nmax:
-            print('raggiunto massimo numero di iterazioni \n')
-            
-        
-        return x1,it,xk
+    
+    return x1,it,xk
     
 def stima_ordine(xk,iterazioni):
-     #Vedi dispensa allegata per la spiegazione
+    #Vedi dispensa allegata per la spiegazione
+    k=iterazioni-4
+    p=np.log(abs(xk[k+2]-xk[k+3])/abs(xk[k+1]-xk[k+2]))/np.log(abs(xk[k+1]-xk[k+2])/abs(xk[k]-xk[k+1]));
 
-      k=iterazioni-4
-      p=np.log(abs(xk[k+2]-xk[k+3])/abs(xk[k+1]-xk[k+2]))/np.log(abs(xk[k+1]-xk[k+2])/abs(xk[k]-xk[k+1]));
-     
-      ordine=p
-      return ordine
-
-
-      return ordine
+    ordine=p
+    return ordine
 
 def my_newtonSys(fun, jac, x0, tolx, tolf, nmax):
 
-  """
-  Funzione per la risoluzione del sistema F(x)=0
-  mediante il metodo di Newton.
+    """
+    Funzione per la risoluzione del sistema F(x)=0
+    mediante il metodo di Newton.
+    Parametri
+    ----------
+    fun : funzione vettoriale contenente ciascuna equazione non lineare del sistema.
+    jac : funzione che calcola la matrice Jacobiana della funzione vettoriale.
+    x0 : array
+      Vettore contenente l'approssimazione iniziale della soluzione.
+    tolx : float
+      Parametro di tolleranza per l'errore assoluto.
+    tolf : float
+      Parametro di tolleranza per l'errore relativo.
+    nmax : int
+      Numero massimo di iterazioni.
+    Restituisce
+    -------
+    x : array
+      Vettore soluzione del sistema (o equazione) non lineare.
+    it : int
+      Numero di iterazioni fatte per ottenere l'approssimazione desiderata.
+    Xm : array
+      Vettore contenente la norma dell'errore relativo tra due iterati successivi.
+    """
 
-  Parametri
-  ----------
-  fun : funzione vettoriale contenente ciascuna equazione non lineare del sistema.
-  jac : funzione che calcola la matrice Jacobiana della funzione vettoriale.
-  x0 : array
-    Vettore contenente l'approssimazione iniziale della soluzione.
-  tolx : float
-    Parametro di tolleranza per l'errore assoluto.
-  tolf : float
-    Parametro di tolleranza per l'errore relativo.
-  nmax : int
-    Numero massimo di iterazioni.
-
-  Restituisce
-  -------
-  x : array
-    Vettore soluzione del sistema (o equazione) non lineare.
-  it : int
-    Numero di iterazioni fatte per ottenere l'approssimazione desiderata.
-  Xm : array
-    Vettore contenente la norma dell'errore relativo tra due iterati successivi.
-  """
-
-  matjac = jac(x0)
-  if #to do:
-    print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
-    return None, None,None
-
-  s = #to do
-  # Aggiornamento della soluzione
-  it = 1
-  x1 =#to do
-  fx1 = fun(x1)
-
-  Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
-
-  while#to do:
-    x0 =#to do
-    it += 1
     matjac = jac(x0)
-    if #to do:
+    if np.linalg.det(matjac) == 0:
+        print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
+        return None, None,None
+
+    s = np.linalg.solve(matjac, -fun(x0))
+    # Aggiornamento della soluzione
+    it = 1
+    x1 = x0 + s
+    fx1 = fun(x1)
+    Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
+
+    while it <= nmax and np.linalg.norm(x1 - x0, 1) > tolx and np.linalg.norm(fx1, 1) > tolf:
+        x0 = x1
+        it += 1
+        matjac = jac(x0)
+        if np.linalg.det(matjac) == 0:
             print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
             return None, None,None
 
    
-    s =#to do
+        s = np.linalg.solve(matjac, -fun(x0))
 
-    # Aggiornamento della soluzione
-    x1 = #to do
-    fx1 = fun(x1)
-    Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
+        # Aggiornamento della soluzione
+        x1 = x0 + s
+        fx1 = fun(x1)
+        Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
 
-  return x1, it, Xm
+    return x1, it, Xm
 
 
 def my_newtonSys_corde(fun, jac, x0, tolx, tolf, nmax):
 
-  """
-  Funzione per la risoluzione del sistema f(x)=0
-  mediante il metodo di Newton, con variante delle corde, in cui lo Jacobiano non viene calcolato
-  ad ogni iterazione, ma rimane fisso, calcolato nell'iterato iniziale x0.
+    """
+    Funzione per la risoluzione del sistema f(x)=0
+    mediante il metodo di Newton, con variante delle corde, in cui lo Jacobiano non viene calcolato
+    ad ogni iterazione, ma rimane fisso, calcolato nell'iterato iniziale x0.
   
- Parametri
-  ----------
-  fun : funzione vettoriale contenente ciascuna equazione non lineare del sistema.
-  jac : funzione che calcola la matrice Jacobiana della funzione vettoriale.
-  x0 : array
-    Vettore contenente l'approssimazione iniziale della soluzione.
-  tolx : float
-    Parametro di tolleranza per l'errore tra due soluzioni successive.
-  tolf : float
-    Parametro di tolleranza sul valore della funzione.
-  nmax : int
-    Numero massimo di iterazioni.
+    Parametri
+    ----------
+    fun : funzione vettoriale contenente ciascuna equazione non lineare del sistema.
+    jac : funzione che calcola la matrice Jacobiana della funzione vettoriale.
+    x0 : array
+        Vettore contenente l'approssimazione iniziale della soluzione.
+    tolx : float
+        Parametro di tolleranza per l'errore tra due soluzioni successive.
+    tolf : float
+        Parametro di tolleranza sul valore della funzione.
+    nmax : int
+        Numero massimo di iterazioni.
     
-  Restituisce
-  -------
-  x : array
-    Vettore soluzione del sistema (o equazione) non lineare.
-  it : int
-    Numero di iterazioni fatte per ottenere l'approssimazione desiderata.
-  Xm : array
-      Vettore contenente la norma dell'errore relativo tra due iterati successivi.
-  """
+    Restituisce
+    -------
+    x : array
+        Vettore soluzione del sistema (o equazione) non lineare.
+    it : int
+        Numero di iterazioni fatte per ottenere l'approssimazione desiderata.
+    Xm : array
+        Vettore contenente la norma dell'errore relativo tra due iterati successivi.
+    """
 
-  matjac = jac(x0)   
-  if #to do:
-    print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
-    return None, None,None
-  s = #to do
-  # Aggiornamento della soluzione
-  it = 1
-  x1 = #to do
-  fx1 = fun(x1)
-
-  Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
-
-  while #to do:
-    x0 = #to do
-    it += 1
-   
-   
-    if #to do:
+    matjac = jac(x0)   
+    if np.linalg.det(matjac) == 0:
         print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
         return None, None,None
-    
-     
-    
-    s = #to do
-
+    s = np.linalg.solve(matjac, -fun(x0))
     # Aggiornamento della soluzione
-    x1 =  #to do
+    it = 1
+    x1 = x0 + s
     fx1 = fun(x1)
-    Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
+    Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
 
-  return x1, it, Xm
+    while it <= nmax and np.linalg.norm(x1 - x0, 1) > tolx and np.linalg.norm(fx1, 1) > tolf:
+        x0 = x1
+        it += 1
+        
+        
+        if np.linalg.det(matjac) == 0:
+            print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
+            return None, None,None
+        
+         
+        
+        s = np.linalg.solve(matjac, -fun(x0))
+    
+        # Aggiornamento della soluzione
+        x1 =  x0 + s
+        fx1 = fun(x1)
+        Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
+
+    return x1, it, Xm
 
 def my_newtonSys_sham(fun, jac, x0, tolx, tolf, nmax):
 
-  """
+    """
   Funzione per la risoluzione del sistema f(x)=0
   mediante il metodo di Newton, con variante delle shamanski, in cui lo Jacobiano viene
   aggiornato ogni un tot di iterazioni, deciso dall'utente.
@@ -438,43 +430,43 @@ def my_newtonSys_sham(fun, jac, x0, tolx, tolf, nmax):
     Numero di iterazioni fatte per ottenere l'approssimazione desiderata.
   Xm : array
       Vettore contenente la norma dell'errore relativo tra due iterati successivi.
-  """
+    """
 
-  matjac = jac(x0)
-  if #to do:
-    print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
-    return None,None,None
+    matjac = jac(x0)
+    if np.linalg.det(matjac) == 0:
+        print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
+        return None,None,None
 
-  s = #to do
-  # Aggiornamento della soluzione
-  it = 1
-  x1 = x0 + s#to do
-  fx1 = fun(x1)
-
-  Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
-  update=10  #Numero di iterazioni durante le quali non si aggiorna la valutazione dello Jacobiano nell'iterato attuale
-  while #to do:
-    x0 =  #to do
-    it += 1
-    if it%update==0:   #Valuto la matrice di iterazione nel nuovo iterato ogni "update" iterazioni
-        #to do
-   
-        if #to do == 0:
-           print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
-           return None,None,None
-        else:
-         
-           s = #to do
-    else:
-          
-           s = -#to do
-
+    s = np.linalg.solve(matjac, -fun(x0))
     # Aggiornamento della soluzione
-    x1 = #to do
+    it = 1
+    x1 = x0 + s
     fx1 = fun(x1)
-    Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
 
-  return x1, it, Xm
+    Xm = [np.linalg.norm(s, 1)/np.linalg.norm(x1,1)]
+    update=10  #Numero di iterazioni durante le quali non si aggiorna la valutazione dello Jacobiano nell'iterato attuale
+    while it <= nmax and np.linalg.norm(x1 - x0, 1) > tolx and np.linalg.norm(fx1, 1) > tolf:
+        x0 = x1
+        it += 1
+        if it%update==0:   #Valuto la matrice di iterazione nel nuovo iterato ogni "update" iterazioni
+            matjac = jac(x0)
+       
+            if np.linalg.det(matjac) == 0:
+                print("La matrice dello Jacobiano calcolata nell'iterato precedente non è a rango massimo")
+                return None,None,None
+            else:
+             
+               s = np.linalg.solve(matjac, -fun(x0))
+        else:
+              
+            s = np.linalg.solve(matjac, -fun(x0))
+
+        # Aggiornamento della soluzione
+        x1 = x0 + s
+        fx1 = fun(x1)
+        Xm.append(np.linalg.norm(s, 1)/np.linalg.norm(x1,1))
+
+    return x1, it, Xm
 
 
 def my_newton_minimo(gradiente, Hess, x0, tolx, tolf, nmax):
