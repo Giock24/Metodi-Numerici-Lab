@@ -608,7 +608,51 @@ def my_newton_minimo_MOD(gradiente, Hess, x0, tolx, tolf, nmax):
         Xm.append(np.linalg.norm(s, 1))
 
     return x1, it, Xm
+#---------------------------------------------
+# Metodi diretti aggiunti tra gli schemi
+# originariamente non ci sono
+import SolveTriangular
+from scipy.linalg import lu
 
+def my_LU(A,b):
+    PT, L, U = lu(A)
+    P = PT.T
+    x = np.zeros_like(b)
+    
+    y, flag = SolveTriangular.Lsolve(L, P@b)
+    if (flag == 1):
+        return x
+    else:
+        x, flag = SolveTriangular.Usolve(U,y)
+    
+    return x
+
+
+from scipy.linalg import qr
+
+def my_QRsolve(A, b):
+    Q, R = qr(A)
+    y = Q.T@b # puoi scriverlo così perchè Q è una matrice ortogonale
+    x, flag = SolveTriangular.Usolve(R, y)
+    if (flag == 1):
+        return np.zeros_like(b)
+    
+    return x
+
+from scipy.linalg import cholesky
+
+def my_cholesky(A,b):
+    L = cholesky(A)
+    LT = L.T
+    
+    y, flag = SolveTriangular.Lsolve(L, b)
+    if (flag == 1):
+        return x
+    else:
+        x, flag = SolveTriangular.Usolve(LT,y)
+    
+    return x
+#---------------------------------------------
 def jacobi(A,b,x0,toll,it_max):
     errore=1000
     d=np.diag(A)
@@ -635,20 +679,20 @@ def jacobi(A,b,x0,toll,it_max):
 def gauss_seidel(A,b,x0,toll,it_max):
     errore=1000
     d=np.diag(A)
-    D=#to do
-    E=#to do
-    F=#to do
-    M=#to do
-    N=#to do
-    T=#to do
+    D=np.diag(d)
+    E=np.tril(A, -1)
+    F=np.triu(A, +1)
+    M=(E+D)
+    N=-F
+    T=np.linalg.inv(M)@N
     autovalori=np.linalg.eigvals(T)
-    raggiospettrale=#to do
+    raggiospettrale=np.sqrt(np.max(autovalori))
     print("raggio spettrale Gauss-Seidel ",raggiospettrale)
     it=0
     er_vet=[]
-    while #to do:
-        temp=#to do
-        x= #to do 
+    while it < it_max and errore > toll:
+        #temp=#to do
+        x=T@x0 + np.linalg.inv(M)@b
         errore=np.linalg.norm(x-x0)/np.linalg.norm(x)
         er_vet.append(errore)
         x0=x.copy()
