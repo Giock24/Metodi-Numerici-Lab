@@ -701,14 +701,14 @@ def gauss_seidel(A,b,x0,toll,it_max):
 
 def gauss_seidel_sor(A,b,x0,toll,it_max,omega):
     errore=1000
-    d=#to donp.diag(A)
-    D=#to do
-    Dinv=#to do
-    E=#to do
-    F=#to do
+    d=np.diag(A)
+    D=np.diag(d)
+    Dinv=np.linalg.inv(D)
+    E=np.tril(A,-1)
+    F=np.triu(A,+1)
     Momega=D+omega*E
     Nomega=(1-omega)*D-omega*F
-    T=#to do
+    T=np.linalg.inv(Momega)@Nomega
     autovalori=np.linalg.eigvals(T)
     raggiospettrale=np.max(np.abs(autovalori))
     print("raggio spettrale Gauss-Seidel SOR ", raggiospettrale)
@@ -719,10 +719,10 @@ def gauss_seidel_sor(A,b,x0,toll,it_max,omega):
     xold=x0.copy()
     xnew=x0.copy()
     er_vet=[]
-    while #to do
-        temp=#to do
-        xtilde#to do
-        xnew=#to do
+    while it < it_max and errore > toll:
+        #temp=#to do
+        xtilde = (np.linalg.inv(M)@N@xold + np.linalg.inv(M)@b) - xold
+        xnew= xold + xtilde*omega
         errore=np.linalg.norm(xnew-xold)/np.linalg.norm(xnew)
         er_vet.append(errore)
         xold=xnew.copy()
@@ -742,7 +742,7 @@ def steepestdescent(A,b,x0,itmax,tol):
 
      
     r = A@x-b
-    p =  
+    p = -r
     it = 0
     nb=np.linalg.norm(b)
     errore=np.linalg.norm(r)/nb
@@ -751,21 +751,19 @@ def steepestdescent(A,b,x0,itmax,tol):
     vet_r=[]
     vet_r.append(errore)
      
-# utilizzare il metodo del gradiente per trovare la soluzione
-    while #to do:
+    # utilizzare il metodo del gradiente per trovare la soluzione
+    while it < itmax and errore > tol:
         it=it+1
-        Ap= #to do
+        Ap=A@p
        
-        alpha = #to do
-                
-        x =  
-        
+        alpha = (r.T@r)/((A@r).T@r)
+        x = x+alpha*p
          
         vec_sol.append(x)
         r=r+alpha*Ap
         errore=np.linalg.norm(r)/nb
         vet_r.append(errore)
-        p =#to do
+        p = -A@x + b
         
      
     return x,vet_r,vec_sol,it
