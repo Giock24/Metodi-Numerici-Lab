@@ -686,7 +686,7 @@ def gauss_seidel(A,b,x0,toll,it_max):
     N=-F
     T=np.linalg.inv(M)@N
     autovalori=np.linalg.eigvals(T)
-    raggiospettrale=np.sqrt(np.max(autovalori))
+    raggiospettrale=np.max(np.abs(autovalori))
     print("raggio spettrale Gauss-Seidel ",raggiospettrale)
     it=0
     er_vet=[]
@@ -807,16 +807,16 @@ def conjugate_gradient(A,b,x0,itmax,tol):
 
 def eqnorm(A,b):
 #Risolve un sistema sovradeterminato con il metodo delle equazioni normali
-    G= 
+    G= A.T@A
      
-    f= 
+    f= A.T@b
     
-    L= 
+    L= cholesky(G,lower=True)
     U=L.T
         
    
-    z=
-    x=
+    z= SolveTriangular.Lsolve(L,f)
+    x= SolveTriangular.Usolve(U,z)
     
     return x
     
@@ -824,8 +824,8 @@ def qrLS(A,b):
 #Risolve un sistema sovradeterminato con il metodo QR-LS
     n=A.shape[1]  # numero di colonne di A
     Q,R=spLin.qr(A)
-    h=#to do
-    x,flag=SolveTriangular.Usolve( #to do)
+    h=Q.T@b
+    x,flag=SolveTriangular.Usolve(R[:n,:],h[:n])
     residuo=np.linalg.norm(h[n:])**2
     return x,residuo
 
@@ -838,11 +838,11 @@ def SVDLS(A,b):
     thresh=np.spacing(1)*m*s[0] ##Calcolo del rango della matrice, numero dei valori singolari maggiori di una soglia
     k=np.count_nonzero(s>thresh)
     print("rango=",k)
-    d=#to do
-    d1=#to do
-    s1=#to do
+    d=U.T@b
+    d1=d[:k].reshape(k,1)
+    s1=s[:k].reshape(k,1)
     #Risolve il sistema diagonale di dimensione kxk avene come matrice dei coefficienti la matrice Sigma
-    c=#to do
+    c=d1/s1
     x=V[:,:k]@c 
     residuo=np.linalg.norm(d[k:])**2
     return x,residuo
@@ -855,12 +855,12 @@ def plagr(xnodi,j):
     xzeri=np.zeros_like(xnodi)
     n=xnodi.size
     if j==0:
-       xzeri=xnodi[1:n]
+        xzeri=xnodi[1:n]
     else:
-       xzeri=np.append(#to do)
+        xzeri=np.append(xnodi[0:j],xnodi[j+1:n])
     
-    num=#to do
-    den=#to do
+    num=np.poly(xzeri)
+    den=np.polyval(num, xnodi[j])
     
     p=num/den
     
@@ -878,13 +878,11 @@ def InterpL(x, y, xx):
         %  y vettore contenente i valori assunti dal polinomio interpolante
         %
      """
-     n=x.size
-     m=xx.size
-     L=np.zeros((m,n))
-     for j in range(n):
-        p=#to do
-        L[:,j]=#to do
-    
-    
-     return L@y
+    n=x.size
+    m=xx.size
+    L=np.zeros((m,n))
+    for j in range(n):
+        p=plagr(x,j)
+        L[:,j]=np.polyval(p,xx)
+    return L@y
 '''

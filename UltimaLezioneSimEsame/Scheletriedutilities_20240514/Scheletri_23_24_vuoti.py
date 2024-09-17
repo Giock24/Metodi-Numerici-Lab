@@ -737,7 +737,7 @@ def conjugate_gradient(A,b,x0,itmax,tol):
         print("Matrice non quadrata")
         return [],[]
     
-    
+
    # inizializzare le variabili necessarie
     x = x0
     
